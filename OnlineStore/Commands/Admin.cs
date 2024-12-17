@@ -2,238 +2,248 @@
 using OnlineStore.Services;
 using OnlineStore.Data;
 
-namespace OnlineStore.Commands;
-
-public class AddProductCommand : ICommand
+namespace OnlineStore.Commands
 {
-    private ProductService _productService;
-
-    public AddProductCommand(ProductService productService)
+    public class AddProductCommand : ICommand
     {
-        _productService = productService;
-    }
+        private ProductService _productService;
 
-    public void Execute()
-    {
-        Console.WriteLine("Enter product name: ");
-        string name = Console.ReadLine();
-
-        Console.WriteLine("Enter product description: ");
-        string description = Console.ReadLine();
-
-        Console.WriteLine("Enter product price: ");
-        if (!int.TryParse(Console.ReadLine(), out int price) || price <= 0)
+        public AddProductCommand(ProductService productService)
         {
-            Console.WriteLine("Invalid price.");
-            return;
+            _productService = productService;
         }
 
-        Console.WriteLine("Enter product quantity: ");
-        if (!int.TryParse(Console.ReadLine(), out int quantity) || quantity <= 0)
+        public void Execute()
         {
-            Console.WriteLine("Invalid quantity.");
-            return;
-        }
+            Console.WriteLine("Enter product name: ");
+            string name = Console.ReadLine();
 
-        Product newProduct = new Product(name, description, price, quantity);
-        _productService.Create(newProduct);
-        Console.WriteLine("Product added successfully.");
-    }
+            Console.WriteLine("Enter product description: ");
+            string description = Console.ReadLine();
 
-    public string ShowInfo()
-    {
-        return "Add Product";
-    }
-}
-public class DeleteProductCommand : ICommand
-{
-    private ProductService _productService;
-
-    public DeleteProductCommand(ProductService productService)
-    {
-        _productService = productService;
-    }
-
-    public void Execute()
-    {
-        Console.WriteLine("Enter product ID to delete: ");
-        if (int.TryParse(Console.ReadLine(), out int productId))
-        {
-            var product = _productService.ReadById(productId);
-            if (product != null)
+            Console.WriteLine("Enter product price: ");
+            if (!int.TryParse(Console.ReadLine(), out int price) || price <= 0)
             {
-                _productService.Delete(productId);
-                Console.WriteLine($"Product {product.name} deleted successfully.");
+                Console.WriteLine("Invalid price.");
+                return;
+            }
+
+            Console.WriteLine("Enter product quantity: ");
+            if (!int.TryParse(Console.ReadLine(), out int quantity) || quantity <= 0)
+            {
+                Console.WriteLine("Invalid quantity.");
+                return;
+            }
+
+            Product newProduct = new Product(name, price, quantity); // Виправлено, оскільки `Product` потребує аргументів для створення об'єкта.
+            _productService.Create(newProduct);
+            Console.WriteLine("Product added successfully.");
+        }
+
+        public string ShowInfo()
+        {
+            return "Add Product";
+        }
+    }
+
+    public class DeleteProductCommand : ICommand
+    {
+        private ProductService _productService;
+
+        public DeleteProductCommand(ProductService productService)
+        {
+            _productService = productService;
+        }
+
+        public void Execute()
+        {
+            Console.WriteLine("Enter product ID to delete: ");
+            if (int.TryParse(Console.ReadLine(), out int productId))
+            {
+                var product = _productService.ReadById(productId);
+                if (product != null)
+                {
+                    _productService.Delete(productId);
+                    Console.WriteLine($"Product {product.Name} deleted successfully."); // Виправлено доступ до властивості `Name`.
+                }
+                else
+                {
+                    Console.WriteLine("Product not found.");
+                }
             }
             else
             {
-                Console.WriteLine("Product not found.");
+                Console.WriteLine("Invalid product ID.");
             }
         }
-        else
+
+        public string ShowInfo()
         {
-            Console.WriteLine("Invalid product ID.");
+            return "Delete Product";
         }
     }
 
-    public string ShowInfo()
+    public class UpdateProductCommand : ICommand
     {
-        return "Delete Product";
-    }
-}
-public class UpdateProductCommand : ICommand
-{
-    private ProductService _productService;
+        private ProductService _productService;
 
-    public UpdateProductCommand(ProductService productService)
-    {
-        _productService = productService;
-    }
-
-    public void Execute()
-    {
-        Console.WriteLine("Enter product ID to update: ");
-        if (int.TryParse(Console.ReadLine(), out int productId))
+        public UpdateProductCommand(ProductService productService)
         {
-            var product = _productService.ReadById(productId);
-            if (product != null)
+            _productService = productService;
+        }
+
+        public void Execute()
+        {
+            Console.WriteLine("Enter product ID to update: ");
+            if (int.TryParse(Console.ReadLine(), out int productId))
             {
-                Console.WriteLine($"Updating product {product.name}");
-
-                Console.WriteLine("Enter new product name (leave blank to keep current): ");
-                string newName = Console.ReadLine();
-                if (!string.IsNullOrEmpty(newName))
+                var product = _productService.ReadById(productId);
+                if (product != null)
                 {
-                    product.name = newName;
-                }
+                    Console.WriteLine($"Updating product {product.Name}");
 
-                Console.WriteLine("Enter new description (leave blank to keep current): ");
-                string newDescription = Console.ReadLine();
-                if (!string.IsNullOrEmpty(newDescription))
+                    Console.WriteLine("Enter new product name (leave blank to keep current): ");
+                    string newName = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(newName))
+                    {
+                        product.Name = newName; // Виправлено доступ до властивості `Name`.
+                    }
+
+                    Console.WriteLine("Enter new price (leave blank to keep current): ");
+                    string priceInput = Console.ReadLine();
+                    if (int.TryParse(priceInput, out int newPrice) && newPrice > 0)
+                    {
+                        product.Price = newPrice; // Виправлено доступ до властивості `Price`.
+                    }
+
+                    Console.WriteLine("Enter new quantity (leave blank to keep current): ");
+                    string quantityInput = Console.ReadLine();
+                    if (int.TryParse(quantityInput, out int newQuantity) && newQuantity >= 0)
+                    {
+                        product.Quantity = newQuantity; // Виправлено доступ до властивості `Quantity`.
+                    }
+
+                    _productService.Update(product);
+                    Console.WriteLine("Product updated successfully.");
+                }
+                else
                 {
-                    product.description = newDescription;
+                    Console.WriteLine("Product not found.");
                 }
-
-                Console.WriteLine("Enter new price (leave blank to keep current): ");
-                string priceInput = Console.ReadLine();
-                if (int.TryParse(priceInput, out int newPrice) && newPrice > 0)
-                {
-                    product.price = newPrice;
-                }
-
-                Console.WriteLine("Enter new quantity (leave blank to keep current): ");
-                string quantityInput = Console.ReadLine();
-                if (int.TryParse(quantityInput, out int newQuantity) && newQuantity >= 0)
-                {
-                    product.quantity = newQuantity;
-                }
-
-                _productService.Update(product);
-                Console.WriteLine("Product updated successfully.");
             }
             else
             {
-                Console.WriteLine("Product not found.");
+                Console.WriteLine("Invalid product ID.");
             }
         }
-        else
+
+        public string ShowInfo()
         {
-            Console.WriteLine("Invalid product ID.");
+            return "Update Product";
         }
     }
-    public string ShowInfo()
-    {
-        return "Update Product";
-    }
-}
-public class ViewAllOrderHistoryCommand : ICommand
-{
-    private readonly OrderService _orderService;
 
-    public ViewAllOrderHistoryCommand(OrderService orderService)
+    public class ViewAllOrderHistoryCommand : ICommand
     {
-        _orderService = orderService;
-    }
+        private readonly OrderService _orderService;
 
-    public void Execute()
-    {
-        var orders = _orderService.ReadAll();
-        if (orders.Count == 0)
+        public ViewAllOrderHistoryCommand(OrderService orderService)
         {
-            Console.WriteLine("No orders found.");
-            return;
+            _orderService = orderService;
         }
 
-        Console.WriteLine("All orders:");
-        foreach (var order in orders)
+        public void Execute()
         {
-            Console.WriteLine($"Order ID: {order.OrderId} | Account ID: {order.CustomerId} | Date: {order.OrderDate} | Status: {order.OrderStatus}");
-            foreach (var item in order.Products)
+            var orders = _orderService.ReadAll();
+            if (orders.Count == 0)
             {
-                Console.WriteLine($"  - Product: {item.Product.name} | Price: {item.Product.price}");
+                Console.WriteLine("No orders found.");
+                return;
             }
-        }
-    }
 
-    public string ShowInfo()
-    {
-        return "View All Orders";
-    }
-}
-public class DeleteUserAccountCommand(UserAccountService accountService) : ICommand
-{
-    public void Execute()
-    {
-        Console.WriteLine("Enter the username of the account to delete: ");
-        string username = Console.ReadLine();
-
-        var account = accountService.ReadByUserName(username);
-        if (account != null && !(account is AdminAccount))
-        {
-            accountService.Delete(account.Id);
-            Console.WriteLine($"Account for {username} deleted successfully.");
-        }
-        else if (account is AdminAccount)
-        {
-            Console.WriteLine("Cannot delete admin account.");
-        }
-        else
-        {
-            Console.WriteLine("User not found.");
-        }
-    }
-
-    public string ShowInfo()
-    {
-        return "Delete User Account";
-    }
-}
-
-public class ViewAllAccountsCommand(AccountService accountService) : ICommand
-{
-    // Ініціалізуємо команду з AccountService
-
-    // Метод для виконання команди
-    public void Execute()
-    {
-        var accounts = accountService.ReadAll(); // Отримуємо всі акаунти
-
-        if (accounts.Count == 0)
-        {
-            Console.WriteLine("No accounts found.");
-        }
-        else
-        {
-            Console.WriteLine("List of all accounts:");
-            foreach (var account in accounts)
+            Console.WriteLine("All orders:");
+            foreach (var order in orders)
             {
-                Console.WriteLine($"ID: {account.Id}, Name: {account.Name}, Email: {account.Email}, Balance: {account.Balance}");
+                Console.WriteLine($"Order ID: {order.OrderId} | Account ID: {order.CustomerId} | Date: {order.OrderDate} | Status: {order.OrderStatus}");
+                foreach (var item in order.Products)
+                {
+                    Console.WriteLine($"  - Product: {item.Item.Name} | Price: {item.Item.Price}");
+                }
             }
+        }
+
+        public string ShowInfo()
+        {
+            return "View All Orders";
         }
     }
 
-    public string ShowInfo()
+    public class DeleteUserAccountCommand : ICommand
     {
-        return "View all accounts.";
+        private UserAccountService _accountService;
+
+        public DeleteUserAccountCommand(UserAccountService accountService)
+        {
+            _accountService = accountService;
+        }
+
+        public void Execute()
+        {
+            Console.WriteLine("Enter the username of the account to delete: ");
+            string username = Console.ReadLine();
+
+            var account = _accountService.GetUserByUsername(username);
+            if (account != null && !(account is AdminAccount))
+            {
+                _accountService.DeleteUser(account.Id); // Виправлено метод доступу до `Delete`.
+                Console.WriteLine($"Account for {username} deleted successfully.");
+            }
+            else if (account is AdminAccount)
+            {
+                Console.WriteLine("Cannot delete admin account.");
+            }
+            else
+            {
+                Console.WriteLine("User not found.");
+            }
+        }
+
+        public string ShowInfo()
+        {
+            return "Delete User Account";
+        }
+    }
+
+    public class ViewAllAccountsCommand : ICommand
+    {
+        private UserAccountService _accountService;
+
+        public ViewAllAccountsCommand(UserAccountService accountService)
+        {
+            _accountService = accountService;
+        }
+
+        public void Execute()
+        {
+            var accounts = _accountService.GetAllUsers();
+
+            if (accounts.Count == 0)
+            {
+                Console.WriteLine("No accounts found.");
+            }
+            else
+            {
+                Console.WriteLine("List of all accounts:");
+                foreach (var account in accounts)
+                {
+                    Console.WriteLine($"ID: {account.Id}, Name: {account.Username}, Email: {account.Email}, Balance: {account.Balance}");
+                }
+            }
+        }
+
+        public string ShowInfo()
+        {
+            return "View all accounts.";
+        }
     }
 }

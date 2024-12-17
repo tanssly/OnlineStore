@@ -1,25 +1,23 @@
-﻿
-using OnlineStore.Data;
+﻿using OnlineStore.Data;
 using OnlineStore.Repositories;
 using OnlineStore.Services;
-using shop;
-using shop.commands;
-using shop.DB;
-using System.Security.Principal;
+using OnlineStore.Commands;
+using OnlineStore.Models;
+
 
 public class Program
 {
-    public static Account currentAccount;
+    public static UserAccount currentAccount;
 
     public static void Main(string[] args)
     {
-        DbContext db = new DbContext();
-        db.Seed();
-        AccountRepository accountRepository = new AccountRepository(db);
+        DatabaseContext db = new DatabaseContext();
+        db.Seed(db);
+        UserAccountRepository accountRepository = new UserAccountRepository(db);
         ProductRepository productRepository = new ProductRepository(db);
         OrderRepository orderRepository = new OrderRepository(db);
 
-        AccountService accountService = new AccountService(accountRepository);
+        UserAccountService accountService = new UserAccountService(accountRepository);
         ProductService productService = new ProductService(productRepository);
         OrderService orderService = new OrderService(orderRepository);
 

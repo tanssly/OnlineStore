@@ -25,7 +25,7 @@ namespace OnlineStore.Repositories
 
         public List<Product> ReadAll()
         {
-            return _databaseContext.Products.Count == 0? null : _databaseContext.Products.ToList();
+            return _databaseContext.Products.Count == 0 ? new List<Product>() : _databaseContext.Products.ToList();
         }
 
         public void Update(Product product)
@@ -39,28 +39,19 @@ namespace OnlineStore.Repositories
             }
             else
             {
-                {
-                    throw new ArgumentException("Product not fpund.");
-                }
+                throw new ArgumentException("Product not found.");
             }
         }
 
         public void Delete(int id)
         {
-            var product = ReadById(productId);
-
+            var product = ReadById(id);
             if (product == null)
             {
                 throw new ArgumentException("Product not found.");
             }
-
-            if (product.quantity < quantityToDecrease)
-            {
-                throw new ArgumentException("Not enough stock to decrease.");
-            }
-
-            product.quantity -= quantityToDecrease;
-            Update(product);
+            _databaseContext.Products.Remove(product);
         }
+
     }
 }

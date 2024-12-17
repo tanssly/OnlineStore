@@ -1,26 +1,19 @@
-﻿
-using OnlineStore.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Formats.Tar;
-
-namespace Store
+﻿namespace OnlineStore.Models
 {
     public class ShoppingCart
     {
         public int ShoppingCartId { get; set; }
-        public List<CartEntry> Items { get; set; } = new();
+        public List<CartEntry> Items { get; set; } = new List<CartEntry>();
 
         public ShoppingCart(List<CartEntry> cartEntries)
         {
-            Items = cartEntries;
+            Items = cartEntries ?? new List<CartEntry>();
         }
 
-        public void AddItem(Item item, int quantity)
+        public void AddToShoppingCart(Item item, int quantity)
         {
             if (item == null)
-                throw new ArgumentNullException(nameof(item), "Item cannot be null");
+                throw new ArgumentNullException(nameof(item), "Item cannot be null.");
 
             if (quantity <= 0)
                 throw new ArgumentException("Quantity must be positive.", nameof(quantity));
@@ -36,44 +29,47 @@ namespace Store
                 Items.Add(new CartEntry(item, quantity));
             }
         }
+    }
 
-        public void RemoveItem(int itemId)
+    public class CartEntry
+    {
+        public Item Item { get; set; }
+        public int Quantity { get; private set; }
+
+        public CartEntry(Item item, int quantity)
         {
-            var entry = Items.FirstOrDefault(e => e.Item.Id == itemId);
-            if (entry != null)
+            Item = item ?? throw new ArgumentNullException(nameof(item), "Item cannot be null.");
+            Quantity = quantity > 0 ? quantity : throw new ArgumentException("Quantity must be greater than zero.");
+        }
+
+        public decimal CalculateEntryPrice()
+        {
+            return Item.Price * Quantity;
+        }
+
+        public void IncreaseQuantity(int additionalQuantity)
+        {
+            if (additionalQuantity > 0)
+                Quantity += additionalQuantity;
+            else
+                throw new ArgumentException("Additional quantity must be positive.");
+        }
+
+        public void DecreaseQuantity(int quantity)
+        {
+            if (quantity > 0)
             {
-                Items.Remove(entry);
+                Quantity = Math.Max(0, Quantity - quantity); // Щоб уникнути від'ємного значення
             }
             else
             {
-                throw new ArgumentException("Item not found in the cart.", nameof(itemId));
+                throw new ArgumentException("Quantity must be positive.");
             }
         }
 
-        public void ClearAll()
-        {
-            Items.Clear();
-        }
-
-        public decimal CalculateTotal()
-        {
-            return Items.Sum(e => e.CalculateEntryPrice());
-        }
-
-        public Order CreateOrder(int customerId)
-        {
-            if (Items == null || Items.Count == 0)
-                throw new InvalidOperationException("Shopping cart is empty. Cannot create an order.");
-
-            var products = Items.Select(e => new Product(e.Item.Id, e.Item.Name, e.Item.Price)).ToList();
-            var order = new Order(customerId, products);
-            return order;
-        }
     }
-}
 
-
-public class Item
+    public class Item
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -82,7 +78,7 @@ public class Item
         public Item(int id, string name, decimal price)
         {
             Id = id;
-            Name = name ?? throw new ArgumentNullException(nameof(name), "Name cannot be null");
+            Name = name ?? throw new ArgumentNullException(nameof(name), "Name cannot be null.");
             Price = price >= 0 ? price : throw new ArgumentException("Price must be non-negative", nameof(price));
         }
     }

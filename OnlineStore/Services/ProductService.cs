@@ -4,7 +4,7 @@ using OnlineStore.Repositories;
 
 namespace OnlineStore.Services
 {
-    public class ProductService
+    public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
 
@@ -18,7 +18,7 @@ namespace OnlineStore.Services
             _productRepository.Create(product);
         }
 
-        public Product ReadtById(int id)
+        public Product ReadById(int id)
         {
             return _productRepository.ReadById(id);
         }
@@ -37,9 +37,17 @@ namespace OnlineStore.Services
         {
             _productRepository.Delete(id);
         }
-        public void DecreaseQuantity (int productId, int quantityToDecrease)
+
+        public void DecreaseQuantity(int productId, int quantityToDecrease)
         {
-            ProductRepository.DecreaseQuantity(productId, quantityToDecrease);
+            var product = _productRepository.ReadById(productId);
+            if (product == null)
+            {
+                throw new ArgumentException("Product not found.");
+            }
+
+            product.ReduceQuantity(quantityToDecrease);
+            _productRepository.Update(product);
         }
     }
 }

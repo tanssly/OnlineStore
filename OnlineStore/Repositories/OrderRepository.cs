@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using OnlineStore.Data;
 using OnlineStore.Models;
 
 namespace OnlineStore.Data
@@ -12,7 +14,7 @@ namespace OnlineStore.Data
             _dbContext = dbContext;
         }
 
-        public void AddOrder(Order order)
+        public void Create(Order order)
         {
             _dbContext.Orders.Add(order);
         }
@@ -24,37 +26,25 @@ namespace OnlineStore.Data
 
         public List<Order> ReadAll()
         {
-            return _dbContext.Orders.Count == 0 ? null : DatabaseContext.orders;
+            return _dbContext.Orders.Count == 0 ? null : _dbContext.Orders;
         }
-
-        public void UpdateOrder(Order updatedOrder)
-        {
-            var order = _dbContext.Orders.Find(updatedOrder.Id);
-            if (order != null)
-            {
-                // оновлюємо поля замовлення
-                order.Products = updatedOrder.Products;
-                order.TotalPrice = updatedOrder.TotalPrice;
-                order.OrderDate = updatedOrder.OrderDate;
-                order.OrderTime = updatedOrder.OrderTime;
-                // збереження змін в базі даних
-            }
-        }
-
         public void Delete(int id)
         {
-            var order = _dbContext.Orders.Find(id);
+            var orders = ReadAll();
+            var order = orders.FirstOrDefault();
+
             if (order != null)
             {
                 _dbContext.Orders.Remove(order);
-                // збереження змін в базі даних
             }
+            else
+            {
+                throw new ArgumentException("Order not found.");
+            }
+        }
+        public List<Order> GetOrdersByAccountId(int accountId)
+        {
+            return _dbContext.Orders.Where(order => order.CustomerId == accountId).ToList();
         }
     }
 }
-
-/*  void AddOrder(Order order);
-        Order ReadById(int id);
-        List<Order> ReadAll();
-        void Update(Order updatedOrder);
-        void Delete(int id);

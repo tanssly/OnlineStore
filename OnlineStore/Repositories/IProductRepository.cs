@@ -5,10 +5,11 @@ namespace OnlineStore.Repositories
 {
     public interface IProductRepository
     {
-        void Create(Product product);          // Додавання нового продукту
-        Product ReadById(int id);              // Отримати продукт за ID
-        List<Product> ReadAll();               // Отримати всі продукти
-        void Update(Product product);          // Оновити продукт
-        void Delete(int id);                   // Видалити продукт
+        void Create(Product product);          // Adding a new product
+        Product ReadById(int id);              // Get product by ID
+        List<Product> ReadAll();               // Get all products
+        void Update(Product product);          // Update product
+        void Delete(int id);
+        void DecreaseQuantity(Product product, int quantityToDecrease);
     }
 }

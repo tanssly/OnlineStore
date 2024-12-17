@@ -1,7 +1,6 @@
-﻿using OnlineStore.Models;
+﻿using OnlineStore.Models; 
 using OnlineStore.Services;
-using OnlineStore;
-using System.Security.Principal;
+using OnlineStore.Data;
 
 namespace OnlineStore.Commands;
 
@@ -10,7 +9,7 @@ public class AddBalanceCommand : ICommand
 {
     public void Execute()
     {
-        Account account = Program.currentAccount;
+        UserAccount account = Program.currentAccount;
         Console.WriteLine("Enter the amount to add to your balance: ");
         if (int.TryParse(Console.ReadLine(), out int amount) && amount > 0)
         {
@@ -35,7 +34,7 @@ public class CheckBalanceCommand : ICommand
 {
     public void Execute()
     {
-        Account account = Program.currentAccount;
+        UserAccount account = Program.currentAccount;
         Console.WriteLine($"Your current balance is: {account.Balance} ");
         Console.ReadKey();
     }
@@ -60,7 +59,7 @@ public class ViewProductsCommand(ProductService productService) : ICommand
         Console.WriteLine("Available products:");
         foreach (var product in products)
         {
-            Console.WriteLine($"ID: {product.id} | Name: {product.name} | Price: {product.price} | Quantity: {product.quantity} | Description: {product.description}");
+            Console.WriteLine($"ID: {product.Id} | Name: {product.Name} | Price: {product.Price} | Quantity: {product.Quantity}");
         }
         Console.ReadKey();
     }
@@ -78,19 +77,19 @@ public class AddProductToCartCommand(ProductService productService, UserAccountS
         Console.WriteLine("Enter the ID of the product to add to your cart: ");
         if (int.TryParse(Console.ReadLine(), out int productId))
         {
-            Account account = Program.currentAccount;
+            UserAccount account = Program.currentAccount;
             var product = productService.ReadById(productId);
             if (productId != null)
             {
                 Console.WriteLine("Enter the quantity to add: ");
                 if (int.TryParse(Console.ReadLine(), out int quantity) && quantity > 0 &&
-                    quantity <= product.quantity)
+                    quantity <= product.Quantity)
                 {
-                    accountService.AddToCart(account, productId, quantity);
+                    accountService.AddToShoppingCart(account, productId, quantity);
                 }
-                else if (quantity > product.quantity)
+                else if (quantity > product.Quantity)
                 {
-                    Console.WriteLine($"Max quantity for this product is {product.quantity}.");
+                    Console.WriteLine($"Max quantity for this product is {product.Quantity}.");
                 }
                 else
                 {
@@ -124,7 +123,7 @@ public class DeleteProductFromCartCommand(UserAccountService accountService)
 
         if (int.TryParse(Console.ReadLine(), out int productId))
         {
-            Account account = Program.currentAccount;
+            UserAccount account = Program.currentAccount;
             var cartItem = accountService.GetCartItem(account, productId);
 
             if (cartItem != null)
@@ -178,7 +177,7 @@ public class ViewCartCommand() : ICommand
         var account = Program.currentAccount;
         var currentCart = account.Cart;
 
-        if (currentCart == null || currentCart.Products == null || currentCart.Products.Count == 0)
+        if (currentCart == null || currentCart.Items == null || currentCart.Items.Count == 0)
         {
             Console.WriteLine("Your cart is empty.");
             return;
@@ -186,11 +185,11 @@ public class ViewCartCommand() : ICommand
 
         Console.WriteLine("Products in your cart:");
         float totalPrice = 0;
-        foreach (var cartItem in currentCart.Products)
+        foreach (var cartItem in currentCart.Items)
         {
-            var price = cartItem.Product.price * cartItem.Quantity;
-            Console.WriteLine($"Product: {cartItem.Product.name} | Price: {price} | Quantity: {cartItem.Quantity}");
-            totalPrice += price;
+            var price = cartItem.Item.Price * cartItem.Quantity;
+            Console.WriteLine($"Product: {cartItem.Item.Name} | Price: {price} | Quantity: {cartItem.Quantity}");
+            totalPrice += (float)price;
         }
         Console.WriteLine($"Total price: {totalPrice}");
         Console.ReadKey();
@@ -205,7 +204,7 @@ public class ViewCartCommand() : ICommand
 public class ViewOrderHistoryCommand(OrderService orderService) : ICommand
 {
     private OrderService _orderService = orderService;
-    Account _account = Program.currentAccount;
+    UserAccount _account = Program.currentAccount;
     public void Execute()
     {
         Console.Clear();
@@ -223,10 +222,10 @@ public class ViewOrderHistoryCommand(OrderService orderService) : ICommand
             Console.WriteLine($"Order ID: {order.OrderId} | Date: {order.OrderDate} | Time : {order.OrderTime} | Status: {order.OrderStatus}");
             foreach (var item in order.Products)
             {
-                var price = item.Product.price * item.Quantity;
-                Console.WriteLine($"  - Product: {item.Product.name} | Price: {item.Product.price}");
+                var price = item.Item.Price * item.Quantity;
+                Console.WriteLine($"  - Product: {item.Item.Name} | Price: {item.Item.Price}");
 
-                totalPrice += price;
+                totalPrice += (float)price;
             }
             Console.WriteLine($"  - Total price: {totalPrice}");
         }
@@ -250,16 +249,16 @@ public class CreateOrderCommand(OrderService orderService, ProductService produc
         orderService.Create(order);
         if (order.OrderPrice <= balance)
         {
-
             Console.WriteLine("Order created successfully.");
             Console.WriteLine($"Price: {order.OrderPrice}");
-            foreach (var productItem in cart.Products)
+
+            foreach (var item in cart.Items)
             {
-                var productId = productItem.Product.id;
-                var productItemQuantity = productItem.Quantity;
+                var productId = item.Item.Id;  // доступ до продукту через CartEntry
+                var productItemQuantity = item.Quantity;  // доступ до кількості
                 productService.DecreaseQuantity(productId, productItemQuantity);
             }
-            int totalPrice = order.CalculateOrderPrice();
+            int totalPrice = (int)order.CalculateOrderPrice();
             account.Balance -= totalPrice;
         }
         else
@@ -268,6 +267,8 @@ public class CreateOrderCommand(OrderService orderService, ProductService produc
         }
         Console.ReadKey();
     }
+
+
     public string ShowInfo()
     {
         return "Create Order";

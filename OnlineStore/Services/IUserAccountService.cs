@@ -2,12 +2,10 @@
 
 public interface IUserAccountService
 {
-    void Create(UserAccount newAccount);
-
+    void RegisterUser(UserAccount newAccount);
     UserAccount GetUserById(int id);
-
-    void Update(UserAccount updatedAccount);
-
-    void Delete(int id);
-    List<UserAccount> ReadAll();
+    UserAccount GetUserByUsername(string username);
+    void UpdateUser(UserAccount updatedAccount);
+    void DeleteUser(int id);
+    List<UserAccount> GetAllUsers();
 }

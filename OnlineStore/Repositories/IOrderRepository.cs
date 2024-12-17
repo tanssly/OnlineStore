@@ -5,10 +5,10 @@ namespace OnlineStore.Data
 {
     public interface IOrderRepository
     {
-        void AddOrder(Order order);
+        void Create(Order order);
         Order ReadById(int id);
         List<Order> ReadAll();
-        void Update(Order updatedOrder);
         void Delete(int id);
+        List<Order> GetOrdersByAccountId(int accountId);
     }
 }

@@ -9,7 +9,7 @@ namespace OnlineStore.Data
         public List<Product> Products { get; set; } = new List<Product>();
         public List<Order> Orders { get; set; } = new List<Order>();
 
-        public DatabaseContext()
+        public void Seed()
         {
             Products.Add(new Product("Laptop", 1200.00m, 10));
             Products.Add(new Product("Smartphone", 800.00m, 15));
@@ -23,7 +23,7 @@ namespace OnlineStore.Data
             Products.Add(new Product("Monitor", 300.00m, 18));
             Products.Add(new Product("Printer", 200.00m, 8));
             Products.Add(new Product("Camera", 900.00m, 5));
-            Users.Add(new AdminAccount("Tetyana", 50000.00m, "2501tsaul@gmail.com", "admin", new Cart(new List<CartItem>())));
+            Users.Add(new AdminAccount("Tetyana", 50000, "2501tsaul@gmail.com", "admin", new ShoppingCart(new List<CartEntry>())));
 
           
         }

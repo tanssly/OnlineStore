@@ -1,8 +1,9 @@
-﻿using OnlineStore.Data;
+﻿using System.Collections.Generic;
+using OnlineStore.Data;
 using OnlineStore.Models;
-using Store;
+using OnlineStore.Repositories; // Якщо ваш репозиторій знаходиться в цьому просторі імен
 
-namespace OnlineStore.Services
+namespace OnlineStore.Data
 {
     public class OrderService : IOrderService
     {
@@ -10,36 +11,32 @@ namespace OnlineStore.Services
 
         public OrderService(IOrderRepository orderRepository)
         {
-            _orderRepository = orderRepository;
+            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository), "Order repository cannot be null.");
         }
 
-        public void CreateOrder(ShoppingCart cart, int customerId)
+        public void Create(Order order)
         {
-            if (cart == null || cart.Items.Count == 0)
-                throw new ArgumentException("Cart cannot be null or empty.", nameof(cart));
-
-            var order = cart.CreateOrder(customerId);
-            _orderRepository.AddOrder(order);
+            _orderRepository.Create(order);
         }
 
-        public Order GetOrder(int id)
+        public Order ReadById(int id)
         {
-            return _orderRepository.GetOrderById(id);
+            return _orderRepository.ReadById(id);
         }
 
-        public List<Order> GetOrders()
+        public List<Order> ReadAll()
         {
-            return _orderRepository.GetAllOrders();
+            return _orderRepository.ReadAll();
         }
 
-        public void UpdateOrder(Order updatedOrder)
+        public void Delete(int id)
         {
-            _orderRepository.UpdateOrder(updatedOrder);
+            _orderRepository.Delete(id);
         }
 
-        public void DeleteOrder(int id)
+        public List<Order> GetOrdersByAccountId(int accountId)
         {
-            _orderRepository.DeleteOrder(id);
+            return _orderRepository.GetOrdersByAccountId(accountId);
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Security.Principal;
-using System.Text.RegularExpressions;
-using OnlineStore.Data;
+﻿using System.Text.RegularExpressions;
+using OnlineStore.Models;
+using OnlineStore;
+using OnlineStore.Services;
+
 
 namespace OnlineStore.Commands;
 
@@ -40,8 +42,8 @@ public class CommandRegister : ICommand
         int accountType = email.EndsWith("@admin.com") ? 2 : 1;
         int balance = 0;
 
-        UserAccount newAccount = UserAccountFactory.CreateAccount(accountType, username, balance, email, password);
-        _accountService.Create(newAccount);
+        UserAccount newAccount = AccountFactory.CreateAccount(accountType, username, balance, email, password);
+        _accountService.RegisterUser(newAccount);
         Program.currentAccount = newAccount;
         Console.WriteLine($"Account for {username} created.");
     }
@@ -96,7 +98,7 @@ public class LoginCommand : ICommand
         Console.WriteLine("Please enter your account name: ");
         string username = Console.ReadLine();
 
-        Account account = _accountService.ReadByUserName(username);
+        UserAccount account = _accountService.GetUserByUsername(username);
         if (account == null)
         {
             Console.WriteLine("Account not found!");

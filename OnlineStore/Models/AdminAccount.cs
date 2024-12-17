@@ -1,8 +1,6 @@
 ﻿using OnlineStore.Services;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Commands
+using OnlineStore.Data;
+using OnlineStore.Commands;
 
 namespace OnlineStore.Models;
 
@@ -15,8 +13,8 @@ public class AdminAccount : UserAccount
         int balance,
         string email,
         string password,
-        Cart cart
-    ) : base(name, balance, email, password, cart)
+        ShoppingCart cart
+    ) : base(name, email, password,balance, cart)
     {
         Commands = new Dictionary<string, ICommand>();
     }
