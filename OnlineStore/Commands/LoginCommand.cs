@@ -70,33 +70,59 @@ public class ViewProductsCommand(ProductService productService) : ICommand
     }
 }
 
-public class AddProductToCartCommand(ProductService productService, UserAccountService accountService) : ICommand
+public class AddProductToCartCommand : ICommand
 {
+    private readonly ProductService _productService;
+
+    // Constructor to initialize ProductService
+    public AddProductToCartCommand(ProductService productService)
+    {
+        _productService = productService;
+    }
+
+    // Another constructor with UserAccountService
+    public AddProductToCartCommand(ProductService productService, UserAccountService accountService)
+    {
+        _productService = productService;
+    }
+
     public void Execute()
     {
+        // Отримуємо поточного користувача
+        UserAccount account = Program.currentAccount;
+
+        if (account == null)
+        {
+            Console.WriteLine("No user is logged in.");
+            return;
+        }
+
         Console.WriteLine("Enter the ID of the product to add to your cart: ");
         if (int.TryParse(Console.ReadLine(), out int productId))
         {
-            UserAccount account = Program.currentAccount;
-            var product = productService.ReadById(productId);
-            if (productId != null)
+            // Шукаємо продукт
+            var product = _productService.ReadById(productId);
+            if (product != null)
             {
                 Console.WriteLine("Enter the quantity to add: ");
-                if (int.TryParse(Console.ReadLine(), out int quantity) && quantity > 0 &&
-                    quantity <= product.Quantity)
+                if (int.TryParse(Console.ReadLine(), out int quantity) && quantity > 0)
                 {
-                    accountService.AddToShoppingCart(account, productId, quantity);
-                }
-                else if (quantity > product.Quantity)
-                {
-                    Console.WriteLine($"Max quantity for this product is {product.Quantity}.");
+                    if (quantity > product.Quantity)
+                    {
+                        Console.WriteLine($"Max quantity for this product is {product.Quantity}.");
+                    }
+                    else
+                    {
+                        // Додаємо продукт до кошика напряму через UserAccount.Cart
+                        account.Cart.AddToShoppingCart(new Item(product.Id, product.Name, product.Price), quantity);
+                        Console.WriteLine($"Added {quantity} of {product.Name} to your cart.");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Invalid quantity.");
+                    Console.WriteLine("Invalid quantity entered.");
                 }
             }
-
             else
             {
                 Console.WriteLine("Product not found.");
@@ -106,13 +132,16 @@ public class AddProductToCartCommand(ProductService productService, UserAccountS
         {
             Console.WriteLine("Invalid product ID entered.");
         }
+
         Console.ReadKey();
     }
+
     public string ShowInfo()
     {
         return "Add Product to Cart";
     }
 }
+
 
 public class DeleteProductFromCartCommand(UserAccountService accountService)
     : ICommand
@@ -244,7 +273,7 @@ public class CreateOrderCommand(OrderService orderService, ProductService produc
     {
         var account = Program.currentAccount;
         var cart = account.Cart;
-        Order order = new Order(account.Id, cart);
+        Order order = new Order(account.Id, cart.Items);
         var balance = account.Balance;
         orderService.Create(order);
         if (order.OrderPrice <= balance)

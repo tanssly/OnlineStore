@@ -16,14 +16,14 @@ namespace OnlineStore.Models
         public string OrderStatus { get; set; }
         public List<CartEntry> Products { get; private set; }
 
-        public Order(int customerId, List<Product> products)
+        public Order(int customerId, List<CartEntry> cartEntries)
         {
-            if (products == null || products.Count == 0)
-                throw new ArgumentException("Products cannot be null or empty.", nameof(products));
+            if (cartEntries == null || !cartEntries.Any())
+                throw new ArgumentException("Cart entries cannot be null or empty.", nameof(cartEntries));
 
             OrderId = GetNextId();
             CustomerId = customerId;
-            Products = products.Select(p => new CartEntry(new Item(p.Id, p.Name, p.Price), p.Quantity)).ToList();
+            Products = cartEntries;
             OrderPrice = CalculateOrderPrice();
             OrderDate = DateTime.Now.ToString("yyyy-MM-dd");
             OrderTime = DateTime.Now.ToString("HH:mm:ss");

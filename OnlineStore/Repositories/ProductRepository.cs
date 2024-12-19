@@ -53,5 +53,24 @@ namespace OnlineStore.Repositories
             _databaseContext.Products.Remove(product);
         }
 
+        public void DecreaseQuantity(Product product, int quantity)
+        {
+            var existingProduct = _databaseContext.Products.FirstOrDefault(p => p.Id == product.Id);
+            if (existingProduct != null)
+            {
+                if (existingProduct.Quantity >= quantity)
+                {
+                    existingProduct.Quantity -= quantity;
+                }
+                else
+                {
+                    throw new ArgumentException("Insufficient product quantity.");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Product not found.");
+            }
+        }
     }
 }

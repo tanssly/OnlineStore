@@ -110,5 +110,24 @@ public class UserAccountService : IUserAccountService
             account.Cart.Items.Remove(cartItem);
         }
     }
+    public void AddItemToUserCart(UserAccount account, Item item, int quantity)
+    {
+        if (account == null)
+        {
+            throw new ArgumentNullException(nameof(account), "Account cannot be null.");
+        }
+
+        if (item == null)
+        {
+            throw new ArgumentNullException(nameof(item), "Item cannot be null.");
+        }
+
+        if (quantity <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be a positive integer.");
+        }
+
+        account.Cart.AddToShoppingCart(item, quantity);
+    }
 
 }

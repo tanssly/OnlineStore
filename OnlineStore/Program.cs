@@ -12,7 +12,7 @@ public class Program
     public static void Main(string[] args)
     {
         DatabaseContext db = new DatabaseContext();
-        db.Seed(db);
+        db.Seed();
         UserAccountRepository accountRepository = new UserAccountRepository(db);
         ProductRepository productRepository = new ProductRepository(db);
         OrderRepository orderRepository = new OrderRepository(db);
