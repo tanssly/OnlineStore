@@ -1,8 +1,9 @@
 ﻿using OnlineStore.Models;
 using System.Security.Principal;
+
 namespace OnlineStore;
 
-public class AccountFactory
+public class UserAccountFactory
 {
     public static UserAccount CreateAccount(int accountType, string username, int balance, string email, string password)
     {

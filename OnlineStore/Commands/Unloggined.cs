@@ -42,7 +42,7 @@ public class CommandRegister : ICommand
         int accountType = email.EndsWith("@admin.com") ? 2 : 1;
         int balance = 0;
 
-        UserAccount newAccount = AccountFactory.CreateAccount(accountType, username, balance, email, password);
+        UserAccount newAccount = UserAccountFactory.CreateAccount(accountType, username, balance, email, password);
         _accountService.RegisterUser(newAccount);
         Program.currentAccount = newAccount;
         Console.WriteLine($"Account for {username} created.");
@@ -106,7 +106,7 @@ public class LoginCommand : ICommand
         }
 
         Console.WriteLine("Please enter your password: ");
-        string password = ReadPassword(); // Використовуємо метод ReadPassword без окремого класу
+        string password = ReadPassword(); 
 
         if (account.Password == password)
         {

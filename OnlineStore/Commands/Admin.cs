@@ -35,7 +35,7 @@ namespace OnlineStore.Commands
                 return;
             }
 
-            Product newProduct = new Product(name, price, quantity); // Виправлено, оскільки `Product` потребує аргументів для створення об'єкта.
+            Product newProduct = new Product(name, price, quantity); 
             _productService.Create(newProduct);
             Console.WriteLine("Product added successfully.");
         }
@@ -64,7 +64,7 @@ namespace OnlineStore.Commands
                 if (product != null)
                 {
                     _productService.Delete(productId);
-                    Console.WriteLine($"Product {product.Name} deleted successfully."); // Виправлено доступ до властивості `Name`.
+                    Console.WriteLine($"Product {product.Name} deleted successfully."); 
                 }
                 else
                 {
@@ -106,21 +106,21 @@ namespace OnlineStore.Commands
                     string newName = Console.ReadLine();
                     if (!string.IsNullOrEmpty(newName))
                     {
-                        product.Name = newName; // Виправлено доступ до властивості `Name`.
+                        product.Name = newName; 
                     }
 
                     Console.WriteLine("Enter new price (leave blank to keep current): ");
                     string priceInput = Console.ReadLine();
                     if (int.TryParse(priceInput, out int newPrice) && newPrice > 0)
                     {
-                        product.Price = newPrice; // Виправлено доступ до властивості `Price`.
+                        product.Price = newPrice; 
                     }
 
                     Console.WriteLine("Enter new quantity (leave blank to keep current): ");
                     string quantityInput = Console.ReadLine();
                     if (int.TryParse(quantityInput, out int newQuantity) && newQuantity >= 0)
                     {
-                        product.Quantity = newQuantity; // Виправлено доступ до властивості `Quantity`.
+                        product.Quantity = newQuantity; 
                     }
 
                     _productService.Update(product);
@@ -195,7 +195,7 @@ namespace OnlineStore.Commands
             var account = _accountService.GetUserByUsername(username);
             if (account != null && !(account is AdminAccount))
             {
-                _accountService.DeleteUser(account.Id); // Виправлено метод доступу до `Delete`.
+                _accountService.DeleteUser(account.Id); 
                 Console.WriteLine($"Account for {username} deleted successfully.");
             }
             else if (account is AdminAccount)
