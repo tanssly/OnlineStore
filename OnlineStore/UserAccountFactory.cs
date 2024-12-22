@@ -10,7 +10,6 @@ public class UserAccountFactory
         UserAccount account = accountType switch
         {
             1 => new RegularUserAccount(username, balance, email, password, new ShoppingCart(new List<CartEntry>())),
-            2 => new AdminAccount(username, balance, email, password, new ShoppingCart(new List<CartEntry>())),
             _ => throw new ArgumentException("Invalid account type.")
         };
         return account;

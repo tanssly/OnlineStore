@@ -23,7 +23,6 @@ namespace OnlineStore.Data
             Products.Add(new Product("Monitor", 300.00m, 18));
             Products.Add(new Product("Printer", 200.00m, 8));
             Products.Add(new Product("Camera", 900.00m, 5));
-            Users.Add(new AdminAccount("Tetyana", 50000, "2501tsaul@gmail.com", "admin", new ShoppingCart(new List<CartEntry>())));
 
           
         }

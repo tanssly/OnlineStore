@@ -59,7 +59,7 @@
         {
             if (quantity > 0)
             {
-                Quantity = Math.Max(0, Quantity - quantity); // Щоб уникнути від'ємного значення
+                Quantity = Math.Max(0, Quantity - quantity); 
             }
             else
             {

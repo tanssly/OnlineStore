@@ -25,13 +25,11 @@ public class CommandRegister : ICommand
             username = Console.ReadLine();
         } while (string.IsNullOrEmpty(username));
 
-
         do
         {
             Console.WriteLine("Please enter your email: ");
             email = Console.ReadLine();
         } while (!IsValidEmail(email));
-
 
         do
         {
@@ -39,12 +37,12 @@ public class CommandRegister : ICommand
             password = ReadPassword();
         } while (string.IsNullOrEmpty(password));
 
-        int accountType = email.EndsWith("@admin.com") ? 2 : 1;
         int balance = 0;
 
-        UserAccount newAccount = UserAccountFactory.CreateAccount(accountType, username, balance, email, password);
+        UserAccount newAccount = UserAccountFactory.CreateAccount(1, username, balance, email, password); 
         _accountService.RegisterUser(newAccount);
-        Program.currentAccount = newAccount;
+
+        Program.currentAccount = newAccount; 
         Console.WriteLine($"Account for {username} created.");
     }
 
@@ -53,7 +51,6 @@ public class CommandRegister : ICommand
         var emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
         return Regex.IsMatch(email, emailPattern);
     }
-
 
     private string ReadPassword()
     {
@@ -84,6 +81,8 @@ public class CommandRegister : ICommand
     }
 }
 
+
+
 public class LoginCommand : ICommand
 {
     private UserAccountService _accountService;
@@ -106,7 +105,7 @@ public class LoginCommand : ICommand
         }
 
         Console.WriteLine("Please enter your password: ");
-        string password = ReadPassword(); 
+        string password = ReadPassword();
 
         if (account.Password == password)
         {
@@ -139,9 +138,11 @@ public class LoginCommand : ICommand
             }
         }
 
-        Console.WriteLine();
+        Console.WriteLine(); 
+        Console.WriteLine($"Entered password: {password}");  
         return password;
     }
+
 
     public string ShowInfo()
     {

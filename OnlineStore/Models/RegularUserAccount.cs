@@ -33,8 +33,7 @@ public class RegularUserAccount : UserAccount
             { "6", new ViewCartCommand() },
             { "7", new CreateOrderCommand(orderService, productService) },
             { "8", new ViewOrderHistoryCommand(orderService) },
-            { "9", new LogoutCommand() },
-            { "10", new ExitCommand() }
+            { "9", new ExitCommand() }
         };
     }
 }

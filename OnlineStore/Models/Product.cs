@@ -21,7 +21,6 @@ namespace OnlineStore.Models
             Quantity = quantity;
         }
 
-        // Метод для зменшення кількості товару після покупки
         public void ReduceQuantity(int amount)
         {
             if (Quantity >= amount)

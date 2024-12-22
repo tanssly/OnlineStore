@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using OnlineStore.Data;
 using OnlineStore.Models;
-using OnlineStore.Repositories; // Якщо ваш репозиторій знаходиться в цьому просторі імен
+using OnlineStore.Repositories; 
 
 namespace OnlineStore.Data
 {
