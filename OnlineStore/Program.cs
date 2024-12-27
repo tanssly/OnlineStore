@@ -28,7 +28,7 @@ public class Program
             { "3", new ExitCommand() }
         };
 
-        Console.WriteLine("Welcome to the Shop Application!");
+        Console.WriteLine("Welcome to the Online Store!");
         Console.WriteLine("Please log in or register to continue.");
 
         while (true)
